@@ -1,9 +1,31 @@
-import 'package:flutter/material.dart';
-import 'package:spisok_pokupok/screen/home.dart';
-import 'package:spisok_pokupok/screen/splashScreen.dart';
 
-void main() => runApp(MaterialApp(
+import 'dart:math';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spisok_pokupok/screen/splashScreen.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,);
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  int savedRandomNumber = 0;
+  if(prefs.getInt('randomNumber') == null){
+    savedRandomNumber = generateRandomNumber();
+    prefs.setInt('randomNumber', savedRandomNumber);
+    //firebase create database collection users -> document savedRandomNumber -> array first shoppingList second titleList
+    await FirebaseFirestore.instance.collection('users').doc(savedRandomNumber.toString()).set({
+      'shoppingList': [],
+      'titleList': [],
       
+    });
+  }else{
+    savedRandomNumber = prefs.getInt('randomNumber')!;
+  }
+  // Получение сохраненного случайного числа
+  runApp(MaterialApp(
       theme: ThemeData(
         primaryColor: const Color.fromARGB(
             244, 255, 255, 255), // Основной цвет приложения
@@ -42,7 +64,21 @@ void main() => runApp(MaterialApp(
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const splashScreens(),
+        '/': (context) =>  splashScreens(uniqKey: savedRandomNumber.toString(),),
       },
       debugShowCheckedModeBanner: false,
     ));
+}
+int generateRandomNumber() {
+  Random random = Random();
+  return random.nextInt(1000000); // Генерация случайного числа от 0 до 99
+}
+
+
+
+
+
+
+
+
+

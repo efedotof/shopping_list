@@ -1,6 +1,6 @@
-// ignore: file_names
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BeautifulContainer extends StatefulWidget {
@@ -11,12 +11,16 @@ class BeautifulContainer extends StatefulWidget {
     required this.list_name_product,
     // ignore: non_constant_identifier_names
     required this.Deleate_settings,
+    required this.isCheckedLists,
+    required this.index,
     // required this.date_info,
   }) : super(key: key);
 
   final String title;
   // ignore: non_constant_identifier_names
   final List<String> list_name_product;
+  final List<bool> isCheckedLists;
+  final int index;
   // ignore: non_constant_identifier_names
   final void Function() Deleate_settings;
   // final String date_info;
@@ -29,28 +33,49 @@ class BeautifulContainer extends StatefulWidget {
 
 class _BeautifulContainerState extends State<BeautifulContainer> {
   bool isLongPressed = false;
-  List<bool> isCheckedList = [];
+  int selectedCheckboxIndex = -1;
+ 
 
-  @override
-  void initState() {
-    super.initState();
-    isCheckedList = List<bool>.filled(widget.list_name_product.length, false);
+
+  Future<void> savePrefs()async{
+    List<String> newShopping = [];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+
+      List<String> res  = List<String>.from(widget.list_name_product);
+      List<String> hell = prefs.getStringList('shoppingList')??[];
+      if(hell.isNotEmpty){
+        hell[widget.index] = res.toString();
+      }
+      prefs.setStringList('shoppingList', hell);
+    });
+
+    
+
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+
+
 
   @override
   Widget build(BuildContext context) {
-    bool isAllChecked = isCheckedList.every((isChecked) => isChecked);
-
     return Dismissible(
       key: UniqueKey(),
       background: Container(color: Colors.transparent),
       onDismissed: (direction) {
-        widget.Deleate_settings();
+        if (widget.list_name_product.isNotEmpty) {
+          setState(() {
+            for (int i = widget.isCheckedLists.length - 1; i >= 0; i--) {
+              // Handle dismissed items if needed
+            }
+          });
+
+          Future.delayed(const Duration(seconds: 1), () {
+            if (mounted) {
+              // Handle dismissal completion if needed
+            }
+          });
+        }
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -87,7 +112,7 @@ class _BeautifulContainerState extends State<BeautifulContainer> {
                         widget.title.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 22,
+                          fontSize: 19,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -105,33 +130,65 @@ class _BeautifulContainerState extends State<BeautifulContainer> {
                             ),
                           ],
                         ),
-                        
                     ],
-                    
                   ),
-                  Container(color: Colors.white,height: 1,),
+                  Container(color: Colors.white, height: 1),
                   for (int i = 0; i < widget.list_name_product.length; i++)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "${i + 1}. ${widget.list_name_product[i]}",
+                          "${i + 1}. ",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 19,
-                            decoration: isCheckedList[i]
+                            decoration: widget.isCheckedLists[i]
+                                ? TextDecoration.lineThrough
+                                : null,
+                          ),
+                        ),
+                        Text(
+                          widget.list_name_product[i],
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            decoration: widget.isCheckedLists[i]
                                 ? TextDecoration.lineThrough
                                 : null,
                           ),
                         ),
                         Checkbox(
-                          value: isCheckedList[i],
-                          onChanged: (value) {
-                            setState(() {
-                              isCheckedList[i] = value ?? false;
-                            });
-                          },
-                        ),
+  value: widget.isCheckedLists[i],
+  onChanged: isLongPressed
+      ? (value) {
+          setState(() {
+            if (value != null) {
+              if (value) {
+                // Uncheck the previously selected checkbox
+                if (selectedCheckboxIndex != -1) {
+                  widget.isCheckedLists[selectedCheckboxIndex] = false;
+                }
+                selectedCheckboxIndex = i; 
+              } else {
+                selectedCheckboxIndex = -1; 
+              }
+              widget.isCheckedLists[i] = value;
+
+              // Check if the checkbox is now true
+              if (value) {
+                // Remove the item from lists
+                widget.list_name_product[i] = 'Куплено';
+                widget.isCheckedLists[i] = true;
+                if (selectedCheckboxIndex == i) {
+                  selectedCheckboxIndex = -1;
+                }
+                savePrefs();
+              }
+            }
+          });
+        }
+      : null,
+),
                       ],
                     ),
                   const SizedBox(height: 8),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class LoadingScreen extends StatefulWidget {
+  const LoadingScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _LoadingScreenState createState() => _LoadingScreenState();
 }
 

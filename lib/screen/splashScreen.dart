@@ -1,14 +1,17 @@
+
+// ignore_for_file: file_names, library_private_types_in_public_api, camel_case_types, duplicate_ignore, prefer_const_constructors
+
 import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:yandex_mobileads/mobile_ads.dart';
 
 import 'home.dart';
 
+// ignore: camel_case_types
 class splashScreens extends StatefulWidget {
-  const splashScreens({Key? key}) : super(key: key);
-
+  const splashScreens({Key? key, required this.uniqKey}) : super(key: key);
+  final String uniqKey;
   @override
   _splashScreensState createState() => _splashScreensState();
 }
@@ -37,7 +40,7 @@ class _splashScreensState extends State<splashScreens>
     Timer(
         Duration(seconds: 8),
         () => Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (BuildContext context) => Home())));
+            MaterialPageRoute(builder: (BuildContext context) => Home(uniqKey: widget.uniqKey,))));
 
     firstController =
         AnimationController(vsync: this, duration: const Duration(seconds: 6));
