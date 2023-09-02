@@ -33,8 +33,8 @@ class _HomeState extends State<Home> {
   late String shoppingString;
   bool isAdLoaded = false;
   bool isLoading = false;
-  late var adUnitId = 'R-M-2511202-5';
-  late var adUnitId2 = 'R-M-2511202-4';
+  late var adUnitId = '';
+  late var adUnitId2 = '';
   // ignore: non_constant_identifier_names
   late InterstitialAd? _ad;
   var adRequest = const AdRequest();
