@@ -23,23 +23,15 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
-
+  
   final prefs = await SharedPreferences.getInstance();
-  //repo
   final themeRepository = ThemeRepository(preferences: prefs);
   final adsRepository = AdsRepository();
   await Hive.initFlutter();
+  
   Hive.registerAdapter(ListBoxAdapter());
-  Hive.registerAdapter(FavoritboxreceptorAdapter());
   await Hive.openBox<ListBox>('listbox');
-  await Hive.openBox<Favoritboxreceptor>('favorit_recip');
 
-  // await Supabase.initialize(
-  //   url: 'https://umsyqyarruvyaaembkpl.supabase.co',
-  //   anonKey:
-  //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtc3lxeWFycnV2eWFhZW1ia3BsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjE0MDQyODEsImV4cCI6MjAzNjk4MDI4MX0.eVNxfwOHvHZopIZWeHm6YQRYDqz8OI_3qhEsObFaG0E',
-  // );
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider(
