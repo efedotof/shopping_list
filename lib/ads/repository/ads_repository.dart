@@ -7,7 +7,7 @@ class AdsRepository implements AdsInterface {
   late final Future<InterstitialAdLoader> _adLoader;
   InterstitialAd? _ad;
 
-  String adUnitId = '';
+  String adUnitId = '1111111111';
 
   @override
   Future<InterstitialAdLoader> createInterstitialAd() async {
